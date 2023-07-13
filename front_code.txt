@@ -1,0 +1,88 @@
+package baseDedonne;
+
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class InterfaceTodo {
+    public static void main(String[] args) {
+        DbFunctions db = new DbFunctions();
+        Connection conn = db.connect_to_db("java_psql", "postgres", "motdepasse");
+        ArrayList<String> liste_of_collonName = new ArrayList<>();
+        ArrayList<String> liste_type_of_colone = new ArrayList<>();
+        /*use the input the user */
+        Scanner input = new Scanner(System.in);
+        System.out.println("-----------// EXAMPLE OF CRUD IN JAVA //---------- ");
+
+        /* LIST OF THE INTERFACE CHOSE BY USERS */
+        System.out.println("-----------// TODO MENU //-------------");
+        System.out.println("1-Add a new Todo .");
+        System.out.println("2-insert todo .");
+        System.out.println("3-Find  a todo.");
+        System.out.println("4-show all todo.");
+        System.out.println("5-update a todo.");
+        System.out.println("6-Delete a todo .");
+        System.out.println("0-Quit");
+        /*-------------------------------------*/
+
+
+        System.out.print(" enter your number choice  : ");
+        int n = input.nextInt();
+        if (n == 1) {
+            System.out.print("enter your todo name  : ");
+            String table_name = input.next();
+
+
+            String name_of_colone = "";
+            String type_of_colone = "";
+            String ok = "ok";
+            String i = "";
+            String txt = "(emp_id SERIAL,primary key(emp_id),";
+
+            while (!(i.equals(ok))) {
+                if (!(name_of_colone.equals(ok)) || (!(type_of_colone.equals(ok)))) {
+                    System.out.print(" enter your  colon name  / write ok if end  : ");
+                    liste_of_collonName.add(name_of_colone);
+                    name_of_colone = input.next();
+                    System.out.print(" type of  colon name  / write ok if end  ");
+                    liste_type_of_colone.add(type_of_colone);
+                    type_of_colone = input.next();
+
+                } else if ((name_of_colone.equals(ok)) || ((type_of_colone.equals(ok)))) {
+                    break;
+                }
+
+
+            }
+            for (int y = 1; y < liste_of_collonName.size(); y++) {
+                txt += (" " + liste_of_collonName.get(y) + " " + liste_type_of_colone.get(y) + " ");
+            }
+
+            db.createTable(conn, table_name + " " + txt);
+        } else if (n == 2) {
+            String txt_1 = "(";
+            String txt_2 = "";
+
+            System.out.print("enter your todo name : ");
+            String table_name = input.next();
+            for (int k = 1; k < liste_of_collonName.size(); k++) {
+                if (k != liste_of_collonName.size() - 1) {
+                    txt_1 += (" " + liste_of_collonName.get(k) + ",");
+                    System.out.print("enter " + liste_of_collonName.get(k) + " : ");
+                    String valuesOfListCollonNane = input.next();
+                    txt_2 += (" '" + valuesOfListCollonNane + "', ");
+                } else if (k == liste_of_collonName.size() - 1) {
+                    txt_1 += (" " + liste_of_collonName.get(liste_of_collonName.size() - 1) + ")");
+                    System.out.print("enter " + liste_of_collonName.get(k) + " : ");
+                    String valuesOfListCollonNane = input.next();
+                    txt_2 += (" '" + valuesOfListCollonNane + "'");
+                }
+            }
+            String txt_3 = "(" + txt_2 + ")";
+            String texte = ("insert into " + table_name + "" + txt_1 + " values" + txt_3 + " ");
+            db.insert_row(conn, texte);
+
+
+        }
+    }
+}
